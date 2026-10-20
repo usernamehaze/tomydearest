@@ -237,6 +237,7 @@
     cursor: pointer; background: #2a2a2a; border: 0; padding: 0;
   }
   .thumb img, .thumb video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+  .thumb img { object-position: top; }
   .thumb:hover img, .thumb:hover video { transform: scale(1.06); }
   .thumb .play {
     position: absolute; inset: 0; display: grid; place-items: center;
@@ -561,11 +562,21 @@ Then we started to get to know each other and i sent you the flowers during your
       label: "S1:E2",
       progress: 100,
       emoji: "💌",
-      story: "Write something here.",
+      story: `You know letters are already a part of our relationship, aren't they? So here are the letters (not all of them, since I don't know where to find the other ones) from the milestones we've had. Every letter holds every single thought I have for you; every overwhelming emotion I've wanted to tell you is all there. I love you so much.`,
       colors: ["#ffb703", "#fb5607"],
       photo: "",
       video: "",
-      gallery: []
+      gallery: [
+        "media/letters/1-riri-kill-it-tonight.png",
+        "media/letters/2-birthday-graduation-1.png",
+        "media/letters/3-birthday-graduation-2.png",
+        "media/letters/4-sweetest-soul.png",
+        "media/letters/5-my-dearest-riri.png",
+        "media/letters/6-third-monthsary.png",
+        "media/letters/7-my-nurse.jpg",
+        "media/letters/8-my-wife.png",
+        "media/letters/9-misis-ko.png"
+      ]
     },
     {
       title: "Different cities, same feeling.",
