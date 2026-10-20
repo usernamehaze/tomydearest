@@ -443,7 +443,7 @@
         ["🤗", "Next time I see you", "The hug I've been saving up."]
       ],
       colors: ["#ff4d6d", "#590d22"],
-      photo: "",
+      photo: "media/month5/flowers.jpg",
       video: "",
       gallery: [
         "media/month5/flowers-surprise.mp4",
@@ -459,7 +459,7 @@
   const fmt = d => d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
   const monthDate = i => { const d = new Date(start); d.setMonth(d.getMonth() + i + 1); return d; };
   const poster = m => m.photo
-    ? `url("${m.photo}")`
+    ? `url('${m.photo}')`
     : `radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 45%), linear-gradient(135deg, ${m.colors[0]}, ${m.colors[1]})`;
 
   const isVideo = src => /\.(mp4|webm|mov|m4v)$/i.test(src);
