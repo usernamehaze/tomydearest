@@ -308,7 +308,7 @@
     <p id="hero-desc"></p>
     <div class="countdown" id="countdown"></div>
     <div class="btns">
-      <button class="btn btn-play" onclick="openMonth(MONTHS.length - 1)">▶ Play</button>
+      <button class="btn btn-play" onclick="openBox(latestBox)">▶ Play</button>
       <button class="btn btn-info" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})">ⓘ Our Timeline</button>
     </div>
   </div>
@@ -352,16 +352,21 @@
 
 <script>
   // ============================================================
-  //  EDIT THIS PART: your start date and your months together.
+  //  EDIT THIS PART: your start date and everything in the boxes.
+  //
+  //  There are three separate lists, one per row of boxes:
+  //    MONTHS             "Our Timeline: Month by Month"
+  //    TOP_MOMENTS        "Top 5 Moments of Us"
+  //    CONTINUE_WATCHING  "Continue Watching for Us"
+  //  Every box is its own thing: what you put in one box never shows
+  //  up in another.
   //
   //  Pictures & videos: put the files in the media/ folder, then
-  //  for each month fill in (all optional):
-  //    photo:   cover picture for the boxes, e.g. "media/month1/cover.jpg"
-  //    continuePhoto: picture for this month's box in "Continue Watching"
-  //             only (falls back to photo)
-  //    video:   clip that plays when you hover the box (and in the
-  //             big banner for the latest month), e.g. "media/month1/clip.mp4"
-  //    gallery: more pictures and videos shown when you open the month,
+  //  for each box fill in (all optional):
+  //    photo:   cover picture for the box, e.g. "media/month1/cover.jpg"
+  //    video:   clip that plays when you hover the box, e.g. "media/clip.mp4"
+  //             (the latest month's clip also plays in the big top banner)
+  //    gallery: pictures and videos shown when you open the box,
   //             e.g. ["media/month1/1.jpg", "media/month1/call.mp4"]
   //  Videos should be .mp4 (or .webm). Keep them small (under ~50 MB).
   // ============================================================
@@ -446,7 +451,69 @@
       ],
       colors: ["#ff4d6d", "#590d22"],
       photo: "",
-      continuePhoto: "media/month5/flowers.jpg",
+      video: "",
+      gallery: []
+    }
+  ];
+
+  const TOP_MOMENTS = [
+    {
+      title: "Making it official",
+      emoji: "💬",
+      story: "Write about this moment here.",
+      colors: ["#ff758f", "#c9184a"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Watching a movie together",
+      emoji: "🎬",
+      story: "Write about this moment here.",
+      colors: ["#ffb703", "#fb5607"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "A package in the mail",
+      emoji: "📦",
+      story: "Write about this moment here.",
+      colors: ["#48cae4", "#023e8a"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Taking care of each other",
+      emoji: "🧸",
+      story: "Write about this moment here.",
+      colors: ["#b5179e", "#3a0ca3"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Happy 5th monthsary",
+      emoji: "🥂",
+      story: "Write about this moment here.",
+      colors: ["#ff4d6d", "#590d22"],
+      photo: "",
+      video: "",
+      gallery: []
+    }
+  ];
+
+  // progress: how full the red bar under the box is (0 to 100)
+  const CONTINUE_WATCHING = [
+    {
+      title: "And we're just getting started.",
+      label: "S1:E5",
+      progress: 35,
+      emoji: "💖",
+      story: "Five months in, and this is only the beginning of us.",
+      colors: ["#ff4d6d", "#590d22"],
+      photo: "media/month5/flowers.jpg",
       video: "",
       gallery: [
         "media/month5/flowers-surprise.mp4",
@@ -460,6 +527,50 @@
         "media/month5/video-call-2.jpg",
         "media/month5/video-call-3.jpg"
       ]
+    },
+    {
+      title: "Stronger every day.",
+      label: "S1:E4",
+      progress: 100,
+      emoji: "🫶",
+      story: "Write something here.",
+      colors: ["#b5179e", "#3a0ca3"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Every mile was worth it.",
+      label: "S1:E3",
+      progress: 100,
+      emoji: "✈️",
+      story: "Write something here.",
+      colors: ["#48cae4", "#023e8a"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Closer, even from far away.",
+      label: "S1:E2",
+      progress: 100,
+      emoji: "💌",
+      story: "Write something here.",
+      colors: ["#ffb703", "#fb5607"],
+      photo: "",
+      video: "",
+      gallery: []
+    },
+    {
+      title: "Different cities, same feeling.",
+      label: "S1:E1",
+      progress: 100,
+      emoji: "📱",
+      story: "Write something here.",
+      colors: ["#ff758f", "#c9184a"],
+      photo: "",
+      video: "",
+      gallery: []
     }
   ];
   // ============================================================
@@ -517,43 +628,71 @@
   document.getElementById("row-stats").innerHTML =
     stats.map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join("");
 
+  // Every box gets its own entry here; clicking it opens only that entry.
+  const BOXES = [];
+  const box = item => BOXES.push(item) - 1;
+
+  const thumbs = (gallery, id) => gallery.length
+    ? `<div class="grid">${gallery.map((src, k) => `
+        <button class="thumb" onclick="openLightbox(${id}, ${k})">
+          ${isVideo(src)
+            ? `<video src="${src}#t=0.5" poster="${posterOf(src)}" muted playsinline preload="metadata"></video><div class="play">▶</div>`
+            : `<img src="${src}" alt="" loading="lazy">`}
+        </button>`).join("")}</div>`
+    : `<div class="empty">No pictures or videos here yet.<br>
+        Add them to the <code>gallery</code> list for this box in <code>index.html</code>.</div>`;
+
   // Timeline row
-  document.getElementById("row-timeline").innerHTML = MONTHS.map((m, i) => `
-    <div class="card" style="--poster:${poster(m)}" onclick="openMonth(${i})">
+  document.getElementById("row-timeline").innerHTML = MONTHS.map((m, i) => {
+    const id = box({
+      ...m,
+      date: fmt(monthDate(i)),
+      label: `S1:E${i + 1}`,
+      side: [["Episode", `Month ${i + 1}`], ["Starring", "You & Me"],
+             ["Genre", "Romance, Comedy, Adventure"], ["This episode is", m.tagline]]
+    });
+    return `
+    <div class="card" style="--poster:${poster(m)}" onclick="openBox(${id})">
       ${cover(m)}${preview(m)}
       <div class="shade"></div>
       <div class="num">MONTH ${i + 1}</div>
       ${m.video ? `<div class="has-video">▶ VIDEO</div>` : ""}
       <div class="info"><h3>${m.title}</h3><small>${fmt(monthDate(i))}</small></div>
-    </div>`).join("") + `
+    </div>`;
+  }).join("") + `
     <div class="card soon" style="--poster:linear-gradient(135deg,#333,#111)">
       <div class="emoji">✈️</div><div class="shade"></div>
       <div class="num">COMING SOON</div>
       <div class="info"><h3>${visit ? "Next Visit" : "Month " + (MONTHS.length + 1)}</h3><small>${fmt(visit || monthDate(MONTHS.length))}</small></div>
     </div>`;
 
-  // Top 5 ranked row: one highlight moment per month
-  document.getElementById("row-top").innerHTML = MONTHS.map((m, i) => `
-    <div class="rank" onclick="openMonth(${i})">
-      <div class="big">${i + 1}</div>
-      <div class="tall" style="--poster:${poster(m)}"><span>${m.moments[0][0]} ${m.moments[0][1]}</span></div>
-    </div>`).join("");
-
-  // Continue watching: progress bars fill as the months go by
-  document.getElementById("row-continue").innerHTML = MONTHS.slice().reverse().map((m, r) => {
-    const i = MONTHS.length - 1 - r;
-    if (m.continuePhoto) m = { ...m, photo: m.continuePhoto };
+  // Top 5 ranked row
+  document.getElementById("row-top").innerHTML = TOP_MOMENTS.map((t, i) => {
+    const id = box({ ...t, label: `#${i + 1}` });
     return `
-    <div class="card" style="--poster:${poster(m)}" onclick="openMonth(${i})">
-      ${cover(m)}${preview(m)}
-      <div class="shade"></div>
-      <div class="info"><h3>${m.tagline}</h3><small>S1:E${i + 1} · ${m.title}</small></div>
-      <div class="progress" style="width:${i === MONTHS.length - 1 ? 35 : 100}%"></div>
+    <div class="rank" onclick="openBox(${id})">
+      <div class="big">${i + 1}</div>
+      <div class="tall" style="--poster:${poster(t)}"><span>${t.emoji} ${t.title}</span></div>
     </div>`;
   }).join("");
 
-  function openMonth(i) {
-    const m = MONTHS[i];
+  // Continue watching row
+  document.getElementById("row-continue").innerHTML = CONTINUE_WATCHING.map(c => {
+    const id = box(c);
+    return `
+    <div class="card" style="--poster:${poster(c)}" onclick="openBox(${id})">
+      ${cover(c)}${preview(c)}
+      <div class="shade"></div>
+      <div class="info"><h3>${c.title}</h3><small>${c.label}</small></div>
+      <div class="progress" style="width:${c.progress}%"></div>
+    </div>`;
+  }).join("");
+
+  // The Play button opens the latest month
+  const latestBox = BOXES.findIndex(b => b.title === latest.title && b.side);
+
+  function openBox(id) {
+    const m = BOXES[id];
     document.getElementById("modal").innerHTML = `
       <div class="modal-hero" style="--poster:${poster(m)}">
         ${m.video ? `<video class="bg" id="modal-video" src="${m.video}" autoplay muted loop playsinline></video>` : ""}
@@ -565,32 +704,23 @@
       <div class="modal-body">
         <div>
           <div class="meta" style="display:flex;gap:12px;margin-bottom:12px;color:#ddd">
-            <span class="match">100% Match</span><span>${fmt(monthDate(i))}</span><span class="pill">S1:E${i + 1}</span>
+            <span class="match">100% Match</span>${m.date ? `<span>${m.date}</span>` : ""}${m.label ? `<span class="pill">${m.label}</span>` : ""}
           </div>
-          <p>${m.story}</p>
+          <p>${m.story || ""}</p>
         </div>
         <div class="side">
-          <div>Episode: <b>Month ${i + 1}</b></div>
-          <div>Starring: <b>You & Me</b></div>
-          <div>Genre: <b>Romance, Comedy, Adventure</b></div>
-          <div>This episode is: <b>${m.tagline}</b></div>
+          ${(m.side || [["Starring", "You & Me"]]).map(([k, v]) => `<div>${k}: <b>${v}</b></div>`).join("")}
         </div>
+        ${m.moments ? `
         <div class="moments">
           <h4>Moments</h4>
           ${m.moments.map(([icon, t, d], k) => `
             <div class="moment"><div class="i">${k + 1}</div><div style="font-size:30px">${icon}</div>
             <div><strong>${t}</strong><span>${d}</span></div></div>`).join("")}
-        </div>
+        </div>` : ""}
         <div class="gallery">
           <h4>Photos & Videos</h4>
-          ${m.gallery.length ? `<div class="grid">${m.gallery.map((src, k) => `
-            <button class="thumb" onclick="openLightbox(${i}, ${k})">
-              ${isVideo(src)
-                ? `<video src="${src}#t=0.5" poster="${posterOf(src)}" muted playsinline preload="metadata"></video><div class="play">▶</div>`
-                : `<img src="${src}" alt="" loading="lazy">`}
-            </button>`).join("")}</div>`
-          : `<div class="empty">No pictures or videos for this month yet.<br>
-              Add them to the <code>gallery</code> list for Month ${i + 1} in <code>index.html</code>.</div>`}
+          ${thumbs(m.gallery || [], id)}
         </div>
       </div>`;
     document.getElementById("modal-bg").classList.add("open");
@@ -608,10 +738,10 @@
   }
 
   // Full-screen viewer for gallery pictures and videos
-  let lb = { month: 0, index: 0 };
-  function openLightbox(month, index) {
-    lb = { month, index };
-    const items = MONTHS[month].gallery;
+  let lb = { id: 0, index: 0 };
+  function openLightbox(id, index) {
+    lb = { id, index };
+    const items = BOXES[id].gallery;
     const src = items[index];
     document.getElementById("lb-media").innerHTML = isVideo(src)
       ? `<video src="${src}" poster="${posterOf(src)}" controls autoplay playsinline></video>`
@@ -622,8 +752,8 @@
     document.getElementById("lightbox").classList.add("open");
   }
   function stepLightbox(dir) {
-    const n = MONTHS[lb.month].gallery.length;
-    openLightbox(lb.month, (lb.index + dir + n) % n);
+    const n = BOXES[lb.id].gallery.length;
+    openLightbox(lb.id, (lb.index + dir + n) % n);
   }
   function closeLightbox() {
     document.getElementById("lightbox").classList.remove("open");
