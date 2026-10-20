@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Story — 5 Months</title>
+<style>
+  :root {
+    --bg: #141414;
+    --red: #e50914;
+    --text: #fff;
+    --muted: #b3b3b3;
+    --card-radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; gap: 32px;
+    padding: 18px 4%;
+    background: linear-gradient(180deg, rgba(0,0,0,.8) 0%, transparent 100%);
+    transition: background .3s;
+  }
+  nav.solid { background: var(--bg); }
+  .logo {
+    color: var(--red); font-weight: 900; font-size: 30px;
+    letter-spacing: 1px; text-transform: uppercase;
+    text-shadow: 0 2px 6px rgba(0,0,0,.5);
+  }
+  nav ul { display: flex; gap: 20px; list-style: none; font-size: 14px; }
+  nav li { color: #e5e5e5; cursor: pointer; }
+  nav li.active { font-weight: 700; color: #fff; }
+  .avatar {
+    margin-left: auto; width: 32px; height: 32px; border-radius: 4px;
+    background: linear-gradient(135deg, #e50914, #ff7aa2);
+    display: grid; place-items: center; font-size: 16px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative; height: 82vh; min-height: 480px;
+    display: flex; align-items: center;
+    padding: 0 4%;
+    background:
+      linear-gradient(77deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 60%, transparent 85%),
+      var(--hero-bg, radial-gradient(circle at 75% 40%, #ff4d6d 0%, #a4133c 35%, #2b0a14 75%));
+    background-size: cover; background-position: center;
+  }
+  .hero::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 140px;
+    background: linear-gradient(180deg, transparent, var(--bg));
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 560px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; letter-spacing: 3px; color: #ddd; margin-bottom: 14px;
+  }
+  .badge b { color: var(--red); font-size: 22px; letter-spacing: 0; }
+  .hero h1 {
+    font-size: clamp(40px, 7vw, 76px); line-height: 1; font-weight: 900;
+    text-shadow: 2px 4px 12px rgba(0,0,0,.45); margin-bottom: 16px;
+  }
+  .hero .meta { display: flex; gap: 12px; align-items: center; color: #ddd; font-size: 15px; margin-bottom: 14px; }
+  .match { color: #46d369; font-weight: 700; }
+  .pill { border: 1px solid #888; padding: 0 6px; font-size: 12px; }
+  .hero p { font-size: 18px; line-height: 1.45; color: #eee; text-shadow: 1px 1px 4px rgba(0,0,0,.5); margin-bottom: 24px; }
+  .btns { display: flex; gap: 12px; }
+  .btn {
+    border: 0; border-radius: 4px; cursor: pointer;
+    padding: 11px 26px; font-size: 17px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .btn-play { background: #fff; color: #000; }
+  .btn-play:hover { background: rgba(255,255,255,.75); }
+  .btn-info { background: rgba(109,109,110,.7); color: #fff; }
+  .btn-info:hover { background: rgba(109,109,110,.45); }
+  .floating-hearts span {
+    position: absolute; z-index: 1; opacity: .25; animation: float 9s linear infinite;
+  }
+  @keyframes float {
+    from { transform: translateY(0) rotate(0); opacity: 0; }
+    15% { opacity: .35; }
+    to { transform: translateY(-80vh) rotate(25deg); opacity: 0; }
+  }
+
+  /* ---------- Rows ---------- */
+  main { position: relative; z-index: 3; margin-top: -90px; padding-bottom: 60px; }
+  .row { margin: 0 0 42px; }
+  .row h2 { font-size: 21px; font-weight: 700; padding: 0 4%; margin-bottom: 12px; color: #e5e5e5; }
+  .slider {
+    display: flex; gap: 8px; padding: 24px 4%; margin: -24px 0;
+    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  }
+  .slider::-webkit-scrollbar { display: none; }
+
+  .card {
+    position: relative; flex: 0 0 auto; width: 300px; aspect-ratio: 16 / 9;
+    border-radius: var(--card-radius); overflow: hidden; cursor: pointer;
+    scroll-snap-align: start;
+    background: var(--poster); background-size: cover; background-position: center;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .card:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 10px 30px rgba(0,0,0,.7); }
+  .card .shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,.85)); }
+  .card .num {
+    position: absolute; top: 8px; left: 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px;
+    background: var(--red); padding: 2px 7px; border-radius: 2px;
+  }
+  .card .emoji { position: absolute; top: 14%; right: 10%; font-size: 54px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
+  .card .info { position: absolute; left: 12px; right: 12px; bottom: 10px; }
+  .card h3 { font-size: 19px; font-weight: 800; line-height: 1.1; }
+  .card small { color: #ccc; font-size: 12px; }
+  .card .progress { position: absolute; left: 0; bottom: 0; height: 4px; background: var(--red); }
+
+  /* Top-10 style ranked cards */
+  .rank { display: flex; align-items: flex-end; flex: 0 0 auto; cursor: pointer; scroll-snap-align: start; }
+  .rank .big {
+    font-size: 190px; font-weight: 900; line-height: .8; letter-spacing: -12px;
+    color: var(--bg); -webkit-text-stroke: 4px #595959; margin-right: -14px;
+  }
+  .rank .tall {
+    width: 140px; aspect-ratio: 2 / 3; border-radius: var(--card-radius);
+    background: var(--poster); background-size: cover; background-position: center;
+    position: relative; overflow: hidden; transition: transform .3s;
+  }
+  .rank:hover .tall { transform: scale(1.08); }
+  .rank .tall span {
+    position: absolute; bottom: 8px; left: 8px; right: 8px;
+    font-size: 14px; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,.8);
+  }
+
+  .card.soon { filter: grayscale(.6); }
+  .card.soon .num { background: #444; }
+
+  /* ---------- Modal ---------- */
+  .modal-bg {
+    position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.7);
+    display: none; align-items: flex-start; justify-content: center;
+    padding: 40px 16px; overflow-y: auto;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    width: min(820px, 100%); background: #181818; border-radius: 8px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.8); animation: pop .25s ease;
+  }
+  @keyframes pop { from { transform: scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal-hero {
+    position: relative; aspect-ratio: 16 / 8;
+    background: var(--poster); background-size: cover; background-position: center;
+    display: flex; align-items: flex-end; padding: 32px;
+  }
+  .modal-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, #181818); }
+  .modal-hero h2 { position: relative; z-index: 1; font-size: clamp(28px, 5vw, 46px); font-weight: 900; }
+  .modal-hero .emoji { position: absolute; top: 18%; right: 8%; font-size: 90px; }
+  .close {
+    position: absolute; top: 14px; right: 14px; z-index: 2;
+    width: 36px; height: 36px; border-radius: 50%; border: 0;
+    background: #181818; color: #fff; font-size: 20px; cursor: pointer;
+  }
+  .modal-body { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; padding: 8px 32px 36px; }
+  .modal-body p { line-height: 1.6; color: #ddd; }
+  .modal-body .side { font-size: 14px; color: #777; line-height: 1.8; }
+  .modal-body .side b { color: #ddd; font-weight: 400; }
+  .moments { grid-column: 1 / -1; }
+  .moments h4 { font-size: 20px; margin-bottom: 10px; }
+  .moment {
+    display: flex; gap: 18px; align-items: center;
+    padding: 16px 12px; border-bottom: 1px solid #404040;
+  }
+  .moment .i { font-size: 22px; color: #d2d2d2; width: 24px; text-align: center; }
+  .moment strong { display: block; margin-bottom: 4px; }
+  .moment span { color: #aaa; font-size: 14px; }
+
+  footer { text-align: center; color: #757575; font-size: 13px; padding: 30px 4% 50px; }
+  footer b { color: var(--red); }
+
+  @media (max-width: 640px) {
+    nav ul { display: none; }
+    .logo { font-size: 22px; }
+    .hero { height: 70vh; }
+    .hero p { font-size: 15px; }
+    .card { width: 240px; }
+    .rank .big { font-size: 130px; }
+    .rank .tall { width: 110px; }
+    .modal-body { grid-template-columns: 1fr; padding: 8px 20px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">Our Story</div>
+  <ul>
+    <li class="active">Home</li>
+    <li>Monthsaries</li>
+    <li>Firsts</li>
+    <li>My List ♥</li>
+  </ul>
+  <div class="avatar">💕</div>
+</nav>
+
+<header class="hero" id="hero">
+  <div class="floating-hearts" id="hearts"></div>
+  <div class="hero-content">
+    <div class="badge"><b>N</b>SERIES · NEW EPISODE</div>
+    <h1 id="hero-title">Five Months</h1>
+    <div class="meta">
+      <span class="match">100% Match</span>
+      <span id="hero-date"></span>
+      <span class="pill">Forever+</span>
+      <span>5 Episodes</span>
+    </div>
+    <p id="hero-desc"></p>
+    <div class="btns">
+      <button class="btn btn-play" onclick="openMonth(MONTHS.length - 1)">▶ Play</button>
+      <button class="btn btn-info" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})">ⓘ Our Timeline</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="row" id="timeline">
+    <h2>Our Timeline: Month by Month</h2>
+    <div class="slider" id="row-timeline"></div>
+  </section>
+
+  <section class="row">
+    <h2>Top 5 Moments of Us</h2>
+    <div class="slider" id="row-top"></div>
+  </section>
+
+  <section class="row">
+    <h2>Continue Watching for Us</h2>
+    <div class="slider" id="row-continue"></div>
+  </section>
+</main>
+
+<footer>Made with <b>♥</b> for our 5th monthsary · Happy monthsary, love</footer>
+
+<div class="modal-bg" id="modal-bg" onclick="if (event.target === this) closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+  // ============================================================
+  //  EDIT THIS PART: your start date and your months together.
+  //  `photo` is optional: put an image file next to index.html
+  //  (e.g. "photos/month1.jpg") and it replaces the gradient.
+  // ============================================================
+  const START_DATE = "2026-05-20"; // the day you became official (YYYY-MM-DD)
+
+  const MONTHS = [
+    {
+      title: "The Beginning",
+      emoji: "🌱",
+      tagline: "Where it all started.",
+      story: "The first month of us — nervous texts, long calls, and realizing this was something special.",
+      moments: [
+        ["💬", "Our first official date", "Write what happened here."],
+        ["📸", "First photo together", "The one we still look back on."],
+        ["🌙", "Late-night talks", "Talking until neither of us could keep our eyes open."]
+      ],
+      colors: ["#ff758f", "#c9184a"],
+      photo: ""
+    },
+    {
+      title: "Getting Closer",
+      emoji: "🤝",
+      tagline: "Inside jokes start here.",
+      story: "Month two: learning each other's favorite things, quirks, and the little habits we fell for.",
+      moments: [
+        ["🍜", "Favorite food spot", "Where we keep going back."],
+        ["😂", "First inside joke", "Nobody else gets it, and that's the point."],
+        ["🎬", "Movie marathon", "We picked the movies; we didn't really watch them."]
+      ],
+      colors: ["#ffb703", "#fb5607"],
+      photo: ""
+    },
+    {
+      title: "Little Adventures",
+      emoji: "🗺️",
+      tagline: "Exploring the world, together.",
+      story: "Month three: new places, spontaneous plans, and making memories wherever we went.",
+      moments: [
+        ["🚗", "Our first trip", "Where did we go? Add it here."],
+        ["🌅", "That sunset", "You know the one."],
+        ["🎵", "Our song", "The song that's ours now."]
+      ],
+      colors: ["#48cae4", "#023e8a"],
+      photo: ""
+    },
+    {
+      title: "Through It All",
+      emoji: "🫶",
+      tagline: "Stronger every day.",
+      story: "Month four: the good days and the hard ones. Learning that we're a team either way.",
+      moments: [
+        ["🧸", "Taking care of each other", "Being there when it counted."],
+        ["🎁", "A surprise", "The sweetest thing you did."],
+        ["🏡", "Comfort", "Feeling at home with you."]
+      ],
+      colors: ["#b5179e", "#3a0ca3"],
+      photo: ""
+    },
+    {
+      title: "Five Months",
+      emoji: "💖",
+      tagline: "And we're just getting started.",
+      story: "Five months of you and me. Every month has been a new favorite episode, and I can't wait to see what the next season brings.",
+      moments: [
+        ["🥂", "Happy 5th monthsary", "Today's episode."],
+        ["✨", "What I love most", "Write your favorite thing about them here."],
+        ["🔮", "What's next", "Plans, dreams, and the next 5 months."]
+      ],
+      colors: ["#ff4d6d", "#590d22"],
+      photo: ""
+    }
+  ];
+  // ============================================================
+
+  const start = new Date(START_DATE + "T00:00:00");
+  const fmt = d => d.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  const monthDate = i => { const d = new Date(start); d.setMonth(d.getMonth() + i + 1); return d; };
+  const poster = m => m.photo
+    ? `url("${m.photo}")`
+    : `radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 45%), linear-gradient(135deg, ${m.colors[0]}, ${m.colors[1]})`;
+
+  // Hero = latest month
+  const latest = MONTHS[MONTHS.length - 1];
+  document.getElementById("hero-title").textContent = latest.title;
+  document.getElementById("hero-date").textContent = fmt(monthDate(MONTHS.length - 1));
+  document.getElementById("hero-desc").textContent = latest.story;
+  if (latest.photo) document.getElementById("hero").style.setProperty("--hero-bg", `url("${latest.photo}")`);
+
+  // Timeline row
+  document.getElementById("row-timeline").innerHTML = MONTHS.map((m, i) => `
+    <div class="card" style="--poster:${poster(m)}" onclick="openMonth(${i})">
+      ${m.photo ? "" : `<div class="emoji">${m.emoji}</div>`}
+      <div class="shade"></div>
+      <div class="num">MONTH ${i + 1}</div>
+      <div class="info"><h3>${m.title}</h3><small>${fmt(monthDate(i))}</small></div>
+    </div>`).join("") + `
+    <div class="card soon" style="--poster:linear-gradient(135deg,#333,#111)">
+      <div class="emoji">🔒</div><div class="shade"></div>
+      <div class="num">MONTH ${MONTHS.length + 1}</div>
+      <div class="info"><h3>Coming Soon</h3><small>${fmt(monthDate(MONTHS.length))}</small></div>
+    </div>`;
+
+  // Top 5 ranked row: one highlight moment per month
+  document.getElementById("row-top").innerHTML = MONTHS.map((m, i) => `
+    <div class="rank" onclick="openMonth(${i})">
+      <div class="big">${i + 1}</div>
+      <div class="tall" style="--poster:${poster(m)}"><span>${m.moments[0][0]} ${m.moments[0][1]}</span></div>
+    </div>`).join("");
+
+  // Continue watching: progress bars fill as the months go by
+  document.getElementById("row-continue").innerHTML = MONTHS.slice().reverse().map((m, r) => {
+    const i = MONTHS.length - 1 - r;
+    return `
+    <div class="card" style="--poster:${poster(m)}" onclick="openMonth(${i})">
+      ${m.photo ? "" : `<div class="emoji">${m.emoji}</div>`}
+      <div class="shade"></div>
+      <div class="info"><h3>${m.tagline}</h3><small>S1:E${i + 1} · ${m.title}</small></div>
+      <div class="progress" style="width:${i === MONTHS.length - 1 ? 35 : 100}%"></div>
+    </div>`;
+  }).join("");
+
+  function openMonth(i) {
+    const m = MONTHS[i];
+    document.getElementById("modal").innerHTML = `
+      <div class="modal-hero" style="--poster:${poster(m)}">
+        <button class="close" onclick="closeModal()">✕</button>
+        ${m.photo ? "" : `<div class="emoji">${m.emoji}</div>`}
+        <h2>${m.title}</h2>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="meta" style="display:flex;gap:12px;margin-bottom:12px;color:#ddd">
+            <span class="match">100% Match</span><span>${fmt(monthDate(i))}</span><span class="pill">S1:E${i + 1}</span>
+          </div>
+          <p>${m.story}</p>
+        </div>
+        <div class="side">
+          <div>Episode: <b>Month ${i + 1}</b></div>
+          <div>Starring: <b>You & Me</b></div>
+          <div>Genre: <b>Romance, Comedy, Adventure</b></div>
+          <div>This episode is: <b>${m.tagline}</b></div>
+        </div>
+        <div class="moments">
+          <h4>Moments</h4>
+          ${m.moments.map(([icon, t, d], k) => `
+            <div class="moment"><div class="i">${k + 1}</div><div style="font-size:30px">${icon}</div>
+            <div><strong>${t}</strong><span>${d}</span></div></div>`).join("")}
+        </div>
+      </div>`;
+    document.getElementById("modal-bg").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    document.getElementById("modal-bg").classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  window.addEventListener("scroll", () => document.getElementById("nav").classList.toggle("solid", scrollY > 40));
+
+  // Floating hearts in the hero
+  const hearts = document.getElementById("hearts");
+  for (let k = 0; k < 14; k++) {
+    const s = document.createElement("span");
+    s.textContent = "♥";
+    s.style.left = (40 + Math.random() * 58) + "%";
+    s.style.bottom = (-10 + Math.random() * 20) + "%";
+    s.style.fontSize = (16 + Math.random() * 30) + "px";
+    s.style.color = "#ffccd5";
+    s.style.animationDelay = (Math.random() * 9) + "s";
+    hearts.appendChild(s);
+  }
+</script>
+</body>
+</html>
