@@ -331,6 +331,46 @@
     .paper .env-close { margin-right: -10px; }
   }
 
+  /* ---------- Profile lock ("Who's watching?") ---------- */
+  .gate {
+    position: fixed; inset: 0; z-index: 500; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px 16px; text-align: center; transition: opacity .5s;
+  }
+  .gate.hide { opacity: 0; pointer-events: none; }
+  .gate .logo { position: absolute; top: 18px; left: 4%; }
+  .gate h1 { font-size: clamp(30px, 5vw, 52px); font-weight: 500; margin-bottom: 28px; }
+  .profile { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; }
+  .profile img {
+    display: block; width: clamp(120px, 14vw, 170px); aspect-ratio: 1; object-fit: cover;
+    border-radius: 6px; border: 3px solid transparent; transition: border-color .2s, transform .2s;
+  }
+  .profile:hover img, .profile:focus-visible img { border-color: #fff; transform: scale(1.04); }
+  .profile:hover, .profile:focus-visible { color: #fff; outline: none; }
+  .profile .pname { display: block; margin-top: 12px; font-size: clamp(16px, 2vw, 20px); }
+  .profile .lock { display: block; margin-top: 8px; font-size: 18px; }
+  .pin-view { display: none; }
+  .gate.asking .pick-view { display: none; }
+  .gate.asking .pin-view { display: block; }
+  .pin-view .small { color: var(--muted); font-size: 15px; margin-bottom: 6px; }
+  .pin-view h2 { font-size: clamp(22px, 3.4vw, 34px); font-weight: 500; margin-bottom: 28px; }
+  .pin-boxes { display: flex; gap: 12px; justify-content: center; margin-bottom: 18px; }
+  .pin-boxes.shake { animation: shake .4s; }
+  @keyframes shake { 20%, 60% { transform: translateX(-10px); } 40%, 80% { transform: translateX(10px); } }
+  .pin-boxes span {
+    width: clamp(52px, 8vw, 72px); height: clamp(52px, 8vw, 72px);
+    border: 2px solid #8c8c8c; border-radius: 4px; display: grid; place-items: center;
+    font-size: 34px; color: #fff;
+  }
+  .pin-boxes span.on { border-color: #fff; }
+  .pin-input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .pin-error { color: #e87c03; min-height: 22px; font-size: 15px; }
+  .pin-back {
+    margin-top: 26px; background: none; border: 1px solid #8c8c8c; color: #8c8c8c;
+    padding: 8px 22px; font-size: 15px; letter-spacing: 2px; cursor: pointer;
+  }
+  .pin-back:hover { color: #fff; border-color: #fff; }
+
   footer { text-align: center; color: #757575; font-size: 13px; padding: 30px 4% 50px; }
   footer b { color: var(--red); }
 
@@ -349,6 +389,29 @@
 </style>
 </head>
 <body>
+
+<!-- Netflix-style profile lock. The PIN is in the script below (PROFILE_PIN). -->
+<div class="gate" id="gate">
+  <div class="logo">Our Story</div>
+  <div class="pick-view">
+    <h1>Who's watching?</h1>
+    <button class="profile" onclick="askPin()">
+      <img src="media/profile-riri.jpg" alt="">
+      <span class="pname">my riri</span>
+      <span class="lock">🔒</span>
+    </button>
+  </div>
+  <div class="pin-view">
+    <div class="small">Profile Lock is currently on.</div>
+    <h2>Enter your PIN to access this profile.</h2>
+    <label class="pin-boxes" id="pin-boxes" onclick="document.getElementById('pin-input').focus()">
+      <span></span><span></span><span></span><span></span>
+      <input class="pin-input" id="pin-input" type="tel" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="PIN">
+    </label>
+    <div class="pin-error" id="pin-error"></div>
+    <button class="pin-back" onclick="pickProfile()">BACK</button>
+  </div>
+</div>
 
 <nav id="nav">
   <div class="logo">Our Story</div>
@@ -442,6 +505,8 @@
   //             e.g. ["media/month1/1.jpg", "media/month1/call.mp4"]
   //  Videos should be .mp4 (or .webm). Keep them small (under ~50 MB).
   // ============================================================
+  const PROFILE_PIN = "0520"; // the 4-digit PIN for the "my riri" profile
+
   const START_DATE = "2026-05-20"; // the day you became official (YYYY-MM-DD)
 
   // Long distance details
@@ -983,6 +1048,47 @@ Then we started to get to know each other and i sent you the flowers during your
   document.addEventListener("mouseout", e => {
     const card = e.target.closest(".card");
     if (card && !card.contains(e.relatedTarget)) card.querySelector("video.preview")?.pause();
+  });
+
+  // Profile lock: stays unlocked until the browser tab is closed
+  const gate = document.getElementById("gate");
+  const pinInput = document.getElementById("pin-input");
+  let unlocked = false;
+  try { unlocked = sessionStorage.getItem("unlocked") === "1"; } catch (e) {}
+  if (unlocked) gate.remove(); else document.body.style.overflow = "hidden";
+
+  function askPin() {
+    gate.classList.add("asking");
+    pinInput.value = ""; showPin();
+    pinInput.focus();
+  }
+  function pickProfile() {
+    gate.classList.remove("asking");
+    document.getElementById("pin-error").textContent = "";
+  }
+  function showPin() {
+    document.querySelectorAll("#pin-boxes span").forEach((b, k) => {
+      b.textContent = pinInput.value[k] ? "•" : "";
+      b.classList.toggle("on", k === pinInput.value.length);
+    });
+  }
+  pinInput?.addEventListener("input", () => {
+    pinInput.value = pinInput.value.replace(/\D/g, "").slice(0, 4);
+    document.getElementById("pin-error").textContent = "";
+    showPin();
+    if (pinInput.value.length < 4) return;
+    if (pinInput.value === PROFILE_PIN) {
+      try { sessionStorage.setItem("unlocked", "1"); } catch (e) {}
+      pinInput.blur();
+      gate.classList.add("hide");
+      document.body.style.overflow = "";
+      setTimeout(() => gate.remove(), 500);
+    } else {
+      const boxes = document.getElementById("pin-boxes");
+      boxes.classList.remove("shake"); void boxes.offsetWidth; boxes.classList.add("shake");
+      document.getElementById("pin-error").textContent = "Whoops, wrong PIN. Please try again.";
+      setTimeout(() => { pinInput.value = ""; showPin(); }, 400);
+    }
   });
 
   window.addEventListener("scroll", () => document.getElementById("nav").classList.toggle("solid", scrollY > 40));
