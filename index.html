@@ -275,6 +275,7 @@
     .rank .big { font-size: 130px; }
     .rank .tall { width: 110px; }
     .modal-body { grid-template-columns: 1fr; padding: 8px 20px 28px; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   }
 </style>
 </head>
@@ -444,7 +445,12 @@
       colors: ["#ff4d6d", "#590d22"],
       photo: "",
       video: "",
-      gallery: []
+      gallery: [
+        "media/month5/flowers-surprise.mp4",
+        "media/month5/flowers.jpg",
+        "media/month5/video-call.jpg",
+        "media/month5/more-than-friends.jpg"
+      ]
     }
   ];
   // ============================================================
@@ -457,6 +463,8 @@
     : `radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 45%), linear-gradient(135deg, ${m.colors[0]}, ${m.colors[1]})`;
 
   const isVideo = src => /\.(mp4|webm|mov|m4v)$/i.test(src);
+  // A video's thumbnail is a .jpg with the same name next to it, if there is one
+  const posterOf = src => src.replace(/\.\w+$/, ".jpg");
   const cover = m => m.photo || m.video ? "" : `<div class="emoji">${m.emoji}</div>`;
   const preview = m => m.video
     ? `<video class="preview" src="${m.video}" muted loop playsinline preload="metadata"></video>`
@@ -568,7 +576,7 @@
           ${m.gallery.length ? `<div class="grid">${m.gallery.map((src, k) => `
             <button class="thumb" onclick="openLightbox(${i}, ${k})">
               ${isVideo(src)
-                ? `<video src="${src}#t=0.5" muted playsinline preload="metadata"></video><div class="play">▶</div>`
+                ? `<video src="${src}#t=0.5" poster="${posterOf(src)}" muted playsinline preload="metadata"></video><div class="play">▶</div>`
                 : `<img src="${src}" alt="" loading="lazy">`}
             </button>`).join("")}</div>`
           : `<div class="empty">No pictures or videos for this month yet.<br>
@@ -596,7 +604,7 @@
     const items = MONTHS[month].gallery;
     const src = items[index];
     document.getElementById("lb-media").innerHTML = isVideo(src)
-      ? `<video src="${src}" controls autoplay playsinline></video>`
+      ? `<video src="${src}" poster="${posterOf(src)}" controls autoplay playsinline></video>`
       : `<img src="${src}" alt="">`;
     document.getElementById("lb-count").textContent = `${index + 1} / ${items.length}`;
     document.querySelector(".lb-prev").style.visibility = items.length > 1 ? "visible" : "hidden";
