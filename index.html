@@ -195,12 +195,6 @@
   }
   .distance .plane { display: inline-block; animation: fly 3s ease-in-out infinite; }
   @keyframes fly { 50% { transform: translateX(8px) translateY(-3px); } }
-  .countdown {
-    display: inline-flex; gap: 10px; align-items: baseline;
-    background: rgba(0,0,0,.45); border-left: 3px solid var(--red);
-    padding: 8px 14px; margin-bottom: 24px; font-size: 14px; color: #ddd;
-  }
-  .countdown b { font-size: 20px; color: #fff; font-variant-numeric: tabular-nums; }
   .stat {
     flex: 0 0 auto; width: 220px; padding: 20px; border-radius: var(--card-radius);
     background: #222; border-top: 3px solid var(--red); scroll-snap-align: start;
@@ -221,7 +215,10 @@
   .hero video.bg { z-index: 0; }
   .hero .hero-fade {
     position: absolute; inset: 0; z-index: 0;
-    background: linear-gradient(77deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.2) 60%, transparent 85%);
+    background: linear-gradient(77deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 45%, rgba(0,0,0,.15) 85%);
+  }
+  @media (max-width: 640px) {
+    .hero .hero-fade { background: rgba(0,0,0,.6); }
   }
   .modal-hero video.bg { z-index: 0; }
   .sound {
@@ -459,9 +456,8 @@
     </div>
     <div class="distance" id="hero-distance"></div>
     <p id="hero-desc"></p>
-    <div class="countdown" id="countdown"></div>
     <div class="btns">
-      <button class="btn btn-play" onclick="openBox(latestBox)">▶ Play</button>
+      <button class="btn btn-play" onclick="playTrailer()">▶ Play</button>
       <button class="btn btn-info" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth'})">ⓘ Our Timeline</button>
     </div>
   </div>
@@ -528,13 +524,15 @@
   // ============================================================
   const PROFILE_PIN = "0520"; // the 4-digit PIN for the "my riri" profile
 
+  // The trailer that plays at the top and opens with the Play button
+  const TRAILER = "media/trailer.mp4";
+
   const START_DATE = "2026-05-20"; // the day you became official (YYYY-MM-DD)
 
   // Long distance details
   const MY_CITY = "Iloilo City, Philippines";      // where you are
   const YOUR_CITY = "Calgary, Canada";  // where they are
   const KM_APART = 11259;          // distance between you (km)
-  const NEXT_VISIT = "2026-12-20"; // next time you'll see each other (YYYY-MM-DD), or "" if not set yet
 
   const MONTHS = [
     {
@@ -632,6 +630,8 @@
     },
     {
       title: "Five Months",
+      // Shown as the trailer at the top instead of a box in the timeline
+      hideInTimeline: true,
       emoji: "💖",
       tagline: "And we're just getting started.",
       story: "Five months of you and me, across the miles. Every month has been a new favorite episode, and I can't wait for the one where we're finally in the same place.",
@@ -856,33 +856,21 @@ Then we started to get to know each other and i sent you the flowers during your
   document.getElementById("hero-date").textContent = fmt(monthDate(MONTHS.length - 1));
   document.getElementById("hero-desc").textContent = latest.story;
   if (latest.photo) document.getElementById("hero").style.setProperty("--hero-bg", `url("${latest.photo}")`);
-  if (latest.video) document.getElementById("hero-video").innerHTML =
-    `<video class="bg" src="${latest.video}" autoplay muted loop playsinline></video><div class="hero-fade"></div>`;
+  document.getElementById("hero-video").innerHTML =
+    `<video class="bg" src="${TRAILER}" poster="${TRAILER.replace(/\.mp4$/, ".jpg")}" autoplay muted loop playsinline></video><div class="hero-fade"></div>`;
 
   const km = KM_APART.toLocaleString() + " km";
   document.getElementById("hero-distance").innerHTML =
     `📍 ${MY_CITY} <span class="plane">✈️</span> ${YOUR_CITY} <span class="pill">${km} apart</span>`;
   document.getElementById("foot-distance").textContent = km;
 
-  const visit = NEXT_VISIT ? new Date(NEXT_VISIT + "T00:00:00") : null;
-  const countdown = document.getElementById("countdown");
-  function tick() {
-    if (!visit) { countdown.innerHTML = "Next visit: <b>coming soon</b>"; return; }
-    const ms = visit - new Date();
-    if (ms <= 0) { countdown.innerHTML = "<b>Together right now 🤗</b>"; return; }
-    const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24,
-          m = Math.floor(ms / 6e4) % 60, sec = Math.floor(ms / 1e3) % 60;
-    const p = n => String(n).padStart(2, "0");
-    countdown.innerHTML = `Next hug in <b>${d}d ${p(h)}h ${p(m)}m ${p(sec)}s</b>`;
-  }
-  tick(); setInterval(tick, 1000);
 
   const daysTogether = Math.floor((new Date() - start) / 864e5);
   const stats = [
     [daysTogether.toLocaleString(), "days together"],
     [KM_APART.toLocaleString(), "km between us"],
     [MONTHS.length, "monthsaries, and counting"],
-    [visit ? Math.max(0, Math.ceil((visit - new Date()) / 864e5)) : "?", "days until I see you"],
+    ["Soon", "until I see you again"],
     ["∞", "times I've missed you"]
   ];
   document.getElementById("row-stats").innerHTML =
@@ -904,6 +892,7 @@ Then we started to get to know each other and i sent you the flowers during your
 
   // Timeline row
   document.getElementById("row-timeline").innerHTML = MONTHS.map((m, i) => {
+    if (m.hideInTimeline) return "";
     const id = box({
       ...m,
       date: fmt(monthDate(i)),
@@ -923,7 +912,7 @@ Then we started to get to know each other and i sent you the flowers during your
     <div class="card soon" style="--poster:linear-gradient(135deg,#333,#111)">
       <div class="emoji">✈️</div><div class="shade"></div>
       <div class="num">COMING SOON</div>
-      <div class="info"><h3>${visit ? "Next Visit" : "Month " + (MONTHS.length + 1)}</h3><small>${fmt(visit || monthDate(MONTHS.length))}</small></div>
+      <div class="info"><h3>Next Visit</h3><small>Coming soon</small></div>
     </div>`;
 
   // Top 5 ranked row
@@ -948,8 +937,6 @@ Then we started to get to know each other and i sent you the flowers during your
     </div>`;
   }).join("");
 
-  // The Play button opens the latest month
-  const latestBox = BOXES.findIndex(b => b.title === latest.title && b.side);
 
   function openBox(id) {
     const m = BOXES[id];
@@ -1054,7 +1041,17 @@ Then we started to get to know each other and i sent you the flowers during your
     document.querySelector(".lb-next").style.visibility = items.length > 1 ? "visible" : "hidden";
     document.getElementById("lightbox").classList.add("open");
   }
+  function playTrailer() {
+    lb = { id: null, index: 0 };
+    document.getElementById("lb-media").innerHTML =
+      `<video src="${TRAILER}" poster="${TRAILER.replace(/\.mp4$/, ".jpg")}" controls autoplay playsinline></video>`;
+    document.getElementById("lb-count").textContent = "";
+    document.querySelector(".lb-prev").style.visibility = "hidden";
+    document.querySelector(".lb-next").style.visibility = "hidden";
+    document.getElementById("lightbox").classList.add("open");
+  }
   function stepLightbox(dir) {
+    if (lb.id == null) return;
     const n = BOXES[lb.id].gallery.length;
     openLightbox(lb.id, (lb.index + dir + n) % n);
   }
