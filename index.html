@@ -264,6 +264,73 @@
   .lb-prev { left: 8px; } .lb-next { right: 8px; }
   .lb-count { position: absolute; bottom: 18px; color: #aaa; font-size: 14px; }
 
+  /* ---------- Envelope letter ---------- */
+  .env-bg {
+    position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,.85);
+    display: none; align-items: center; justify-content: center; padding: 16px;
+  }
+  .env-bg.open { display: flex; }
+  .env-close {
+    position: absolute; top: 14px; right: 14px; z-index: 3;
+    width: 40px; height: 40px; border-radius: 50%; border: 0;
+    background: #181818; color: #fff; font-size: 20px; cursor: pointer;
+  }
+  .envelope-wrap { text-align: center; }
+  .envelope {
+    position: relative; width: min(420px, 86vw); aspect-ratio: 3 / 2;
+    margin: 0 auto; cursor: pointer; perspective: 900px;
+    animation: pop .35s ease;
+  }
+  .envelope .back { position: absolute; inset: 0; background: #c9184a; border-radius: 6px; }
+  .envelope .peek {
+    position: absolute; left: 7%; right: 7%; top: 8%; bottom: 8%;
+    background: #fff8f0; border-radius: 4px; transition: transform .8s ease .35s;
+    font-family: Georgia, "Times New Roman", serif; color: #7a1730; font-size: 15px;
+    padding: 14px 16px; text-align: left; overflow: hidden;
+  }
+  .envelope .front {
+    position: absolute; inset: 0; border-radius: 6px; z-index: 2; background: #ff4d6d;
+    clip-path: polygon(0 0, 50% 58%, 100% 0, 100% 100%, 0 100%);
+  }
+  .envelope .flap {
+    position: absolute; left: 0; right: 0; top: 0; height: 58%; z-index: 3;
+    background: #e5383b; clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top; transition: transform .6s ease, z-index 0s .3s;
+  }
+  .envelope .seal {
+    position: absolute; left: 50%; top: 58%; z-index: 4; transform: translate(-50%, -50%);
+    width: 54px; height: 54px; border-radius: 50%; background: #8d0b22;
+    display: grid; place-items: center; font-size: 24px; color: #ffccd5;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4); transition: opacity .3s;
+  }
+  .envelope .to {
+    position: absolute; left: 0; right: 0; bottom: 12%; z-index: 4;
+    font-family: Georgia, "Times New Roman", serif; font-style: italic; color: #fff; font-size: 18px;
+  }
+  .envelope.opened .seal { opacity: 0; }
+  .envelope.opened .flap { transform: rotateX(180deg); z-index: 1; }
+  .envelope.opened .peek { transform: translateY(-62%); }
+  .env-hint { margin-top: 22px; color: #ddd; font-size: 15px; animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .4; } }
+
+  .paper {
+    position: relative; width: min(680px, 100%); max-height: calc(100vh - 32px); overflow-y: auto;
+    background: #fff8f0; color: #3b1d24; border-radius: 6px;
+    padding: 48px 44px 40px; box-shadow: 0 20px 60px rgba(0,0,0,.8);
+    font-family: Georgia, "Times New Roman", serif; font-size: 17px; line-height: 1.75;
+    animation: rise .6s ease;
+  }
+  @keyframes rise { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .paper h3 { font-size: 24px; color: #a4133c; margin-bottom: 18px; font-weight: 700; }
+  .paper p { margin-bottom: 16px; text-indent: 2em; }
+  .paper .sign { text-align: right; margin-top: 26px; font-style: italic; }
+  .paper .sign b { display: block; font-size: 22px; color: #a4133c; font-style: normal; }
+  .paper .env-close { position: sticky; float: right; top: -32px; margin: -32px -28px 0 0; }
+  @media (max-width: 640px) {
+    .paper { padding: 40px 22px 30px; font-size: 16px; }
+    .paper .env-close { margin-right: -10px; }
+  }
+
   footer { text-align: center; color: #757575; font-size: 13px; padding: 30px 4% 50px; }
   footer b { color: var(--red); }
 
@@ -339,6 +406,8 @@
 </main>
 
 <footer>Made with <b>♥</b> from <span id="foot-distance"></span> away · Happy 5th monthsary, love</footer>
+
+<div class="env-bg" id="env-bg" onclick="if (event.target === this) closeLetter()"></div>
 
 <div class="lightbox" id="lightbox" onclick="if (event.target === this) closeLightbox()">
   <button class="lb-close" onclick="closeLightbox()">✕</button>
@@ -528,8 +597,23 @@
     },
     {
       title: "Happy 5th monthsary",
-      emoji: "🥂",
-      story: "Write about this moment here.",
+      emoji: "💌",
+      // Clicking this box opens a sealed envelope with this letter inside.
+      // A blank line between paragraphs starts a new paragraph.
+      letter: {
+        greeting: "My Dearest Riri,",
+        signoff: "Always yours,",
+        from: "Haze",
+        body: `Happy fifth month of love, my wife. Time flies so fast; konti nalang, anniversary na natin. Yay! It's already a milestone for us. We've seriously been through a lot for a long-distance couple. We've gone through different kinds of struggles, conflicts, misunderstandings, and arguments, and yet we still choose each other. I hope we always choose each other and stay with each other for a long, long time. Is forever too much to ask? Hehe. No matter how big or small our fights are, I hope we always find a way to communicate, and learn to understand and listen to each other's situations and perspectives.
+
+You might still carry your past or worry about it, but I don't mind it na, as long as you don't and won't do that to me. I accept you wholeheartedly, baby. Sorry if I keep bringing it up, hehe; it's just my way of getting assurance from you. Because, baby, I love you so much that I'm scared to lose you din. You're not the only one who sees a future together; I see you in my future too. I hope life will be kind to us and let us marry each other someday.
+
+Also, I will always say this to you, even if you get tired of hearing it: I will always be grateful for all the support you give me. I know that you're giving your best and going beyond what you're capable of just to support me in everything. I'm really the luckiest bading in the whole world, because I have a girlfriend who loves me and supports me so much. Don't worry, baby, your effort will not go unnoticed. Once I have a stable career and finances, I will spoil you with everything you want. I always take note of everything you want, baby, so don't worry. I will give you the life you deserve; you won't have to struggle. I will make our life comfortable and positive.
+
+I hope we grow together, not apart, and I hope we grow stronger with every obstacle that comes our way. I will always support you no matter what decisions you make, and I will keep you grounded whenever you stray from your path. I'm always here for you, baby. I want to see you happy, and I want to hear you laugh, hopefully in person soon. I want us to be comfortable with each other, from our silly jokes to the difficult conversations and the overwhelming feelings. Let's always make time for each other and for ourselves. I've always loved our little moments and quality time together; let's keep doing them, baby.
+
+I'm always proud of you, and I will always accept you, whatever phase you're in. Just take it one step at a time, and you will get through it, baby. If you're having a bad day, it's just a bad day. You have so many days ahead of you that you can make good ones, and I will help you make them good, baby. We still have our future together. Yes, you can cry, but you don't have to deal with it for too long. Take a deep breath and let it go, okay? I'm always here. It's not a bad life after all, because we have each other. I love you so muchh, always, my love. I'm hoping for a better future with you. Mwaaaaahhh!`
+      },
       colors: ["#ff4d6d", "#590d22"],
       photo: "",
       video: "",
@@ -755,6 +839,7 @@ Then we started to get to know each other and i sent you the flowers during your
 
   function openBox(id) {
     const m = BOXES[id];
+    if (m.letter) return openLetter(m.letter);
     document.getElementById("modal").innerHTML = `
       <div class="modal-hero" style="${bg(m)}">
         ${m.video ? `<video class="bg" id="modal-video" src="${m.video}" autoplay muted loop playsinline></video>` : ""}
@@ -788,6 +873,48 @@ Then we started to get to know each other and i sent you the flowers during your
     document.getElementById("modal-bg").classList.add("open");
     document.body.style.overflow = "hidden";
   }
+  // Sealed envelope: tap it to open, then the letter unfolds
+  function openLetter(l) {
+    const bgEl = document.getElementById("env-bg");
+    bgEl.innerHTML = `
+      <button class="env-close" onclick="closeLetter()">✕</button>
+      <div class="envelope-wrap">
+        <div class="envelope" id="envelope" onclick="unfoldLetter()">
+          <div class="back"></div>
+          <div class="peek">${l.greeting}</div>
+          <div class="front"></div>
+          <div class="flap"></div>
+          <div class="seal">♥</div>
+          <div class="to">For my Riri</div>
+        </div>
+        <div class="env-hint">Tap the envelope to open 💌</div>
+      </div>`;
+    bgEl.classList.add("open");
+    document.body.style.overflow = "hidden";
+    unfoldLetter.letter = l;
+  }
+  function unfoldLetter() {
+    const env = document.getElementById("envelope");
+    if (!env || env.classList.contains("opened")) return;
+    env.classList.add("opened");
+    const l = unfoldLetter.letter;
+    setTimeout(() => {
+      document.getElementById("env-bg").innerHTML = `
+        <div class="paper">
+          <button class="env-close" onclick="closeLetter()">✕</button>
+          <h3>${l.greeting}</h3>
+          ${l.body.split(/\n\s*\n/).map(p => `<p>${p.trim()}</p>`).join("")}
+          <div class="sign">${l.signoff}<b>${l.from}</b></div>
+        </div>`;
+    }, 1300);
+  }
+  function closeLetter() {
+    const bgEl = document.getElementById("env-bg");
+    bgEl.classList.remove("open");
+    bgEl.innerHTML = "";
+    document.body.style.overflow = "";
+  }
+
   function closeModal() {
     document.getElementById("modal-bg").classList.remove("open");
     document.getElementById("modal").innerHTML = ""; // stops any playing video
@@ -823,7 +950,10 @@ Then we started to get to know each other and i sent you the flowers during your
   }
   document.addEventListener("keydown", e => {
     const lbOpen = document.getElementById("lightbox").classList.contains("open");
-    if (e.key === "Escape") lbOpen ? closeLightbox() : closeModal();
+    if (e.key === "Escape") {
+      if (document.getElementById("env-bg").classList.contains("open")) return closeLetter();
+      lbOpen ? closeLightbox() : closeModal();
+    }
     if (lbOpen && e.key === "ArrowLeft") stepLightbox(-1);
     if (lbOpen && e.key === "ArrowRight") stepLightbox(1);
   });
