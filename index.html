@@ -268,7 +268,8 @@
   @media (max-width: 640px) {
     nav ul { display: none; }
     .logo { font-size: 22px; }
-    .hero { height: 70vh; }
+    .hero { height: auto; min-height: 0; padding-top: 100px; padding-bottom: 110px; }
+    main { margin-top: -50px; }
     .hero p { font-size: 15px; }
     .card { width: 240px; }
     .rank .big { font-size: 130px; }
@@ -364,9 +365,9 @@
   const START_DATE = "2026-05-20"; // the day you became official (YYYY-MM-DD)
 
   // Long distance details
-  const MY_CITY = "My City";       // where you are
-  const YOUR_CITY = "Your City";   // where they are
-  const KM_APART = 1234;           // distance between you (km)
+  const MY_CITY = "Iloilo City, Philippines";      // where you are
+  const YOUR_CITY = "Calgary, Canada";  // where they are
+  const KM_APART = 11259;          // distance between you (km)
   const NEXT_VISIT = "2026-12-20"; // next time you'll see each other (YYYY-MM-DD), or "" if not set yet
 
   const MONTHS = [
