@@ -113,7 +113,7 @@
     position: relative; flex: 0 0 auto; width: 300px; aspect-ratio: 16 / 9;
     border-radius: var(--card-radius); overflow: hidden; cursor: pointer;
     scroll-snap-align: start;
-    background: var(--poster); background-size: cover; background-position: center;
+    background: var(--poster); background-size: cover; background-position: var(--pos, center);
     transition: transform .3s ease, box-shadow .3s ease;
   }
   .card:hover { transform: scale(1.12); z-index: 5; box-shadow: 0 10px 30px rgba(0,0,0,.7); }
@@ -137,7 +137,7 @@
   }
   .rank .tall {
     width: 140px; aspect-ratio: 2 / 3; border-radius: var(--card-radius);
-    background: var(--poster); background-size: cover; background-position: center;
+    background: var(--poster); background-size: cover; background-position: var(--pos, center);
     position: relative; overflow: hidden; transition: transform .3s;
   }
   .rank:hover .tall { transform: scale(1.08); }
@@ -163,7 +163,7 @@
   @keyframes pop { from { transform: scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
   .modal-hero {
     position: relative; aspect-ratio: 16 / 8;
-    background: var(--poster); background-size: cover; background-position: center;
+    background: var(--poster); background-size: cover; background-position: var(--pos, center);
     display: flex; align-items: flex-end; padding: 32px;
   }
   .modal-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, #181818); }
@@ -366,6 +366,7 @@
   //  Pictures & videos: put the files in the media/ folder, then
   //  for each box fill in (all optional):
   //    photo:   cover picture for the box, e.g. "media/month1/cover.jpg"
+  //    photoPosition: which part of the cover shows: "top", "center" or "bottom"
   //    video:   clip that plays when you hover the box, e.g. "media/clip.mp4"
   //             (the latest month's clip also plays in the big top banner)
   //    gallery: pictures and videos shown when you open the box,
@@ -564,7 +565,8 @@ Then we started to get to know each other and i sent you the flowers during your
       emoji: "💌",
       story: `You know letters are already a part of our relationship, aren't they? So here are the letters (not all of them, since I don't know where to find the other ones) from the milestones we've had. Every letter holds every single thought I have for you; every overwhelming emotion I've wanted to tell you is all there. I love you so much.`,
       colors: ["#ffb703", "#fb5607"],
-      photo: "",
+      photo: "media/letters/handwritten-letter.jpg",
+      photoPosition: "top",
       video: "",
       gallery: [
         "media/letters/1-riri-kill-it-tonight.png",
@@ -599,6 +601,8 @@ Then we started to get to know each other and i sent you the flowers during your
     ? `url('${m.photo}')`
     : `radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 45%), linear-gradient(135deg, ${m.colors[0]}, ${m.colors[1]})`;
 
+  // photoPosition picks which part of a cover photo shows: "top", "center" or "bottom"
+  const bg = m => `--poster:${poster(m)};--pos:${m.photoPosition || "center"}`;
   const isVideo = src => /\.(mp4|webm|mov|m4v)$/i.test(src);
   // A video's thumbnail is a .jpg with the same name next to it, if there is one
   const posterOf = src => src.replace(/\.\w+$/, ".jpg");
@@ -669,7 +673,7 @@ Then we started to get to know each other and i sent you the flowers during your
              ["Genre", "Romance, Comedy, Adventure"], ["This episode is", m.tagline]]
     });
     return `
-    <div class="card" style="--poster:${poster(m)}" onclick="openBox(${id})">
+    <div class="card" style="${bg(m)}" onclick="openBox(${id})">
       ${cover(m)}${preview(m)}
       <div class="shade"></div>
       <div class="num">MONTH ${i + 1}</div>
@@ -689,7 +693,7 @@ Then we started to get to know each other and i sent you the flowers during your
     return `
     <div class="rank" onclick="openBox(${id})">
       <div class="big">${i + 1}</div>
-      <div class="tall" style="--poster:${poster(t)}"><span>${t.emoji} ${t.title}</span></div>
+      <div class="tall" style="${bg(t)}"><span>${t.emoji} ${t.title}</span></div>
     </div>`;
   }).join("");
 
@@ -697,7 +701,7 @@ Then we started to get to know each other and i sent you the flowers during your
   document.getElementById("row-continue").innerHTML = CONTINUE_WATCHING.map(c => {
     const id = box(c);
     return `
-    <div class="card" style="--poster:${poster(c)}" onclick="openBox(${id})">
+    <div class="card" style="${bg(c)}" onclick="openBox(${id})">
       ${cover(c)}${preview(c)}
       <div class="shade"></div>
       <div class="info"><h3>${c.title}</h3><small>${c.label}</small></div>
@@ -711,7 +715,7 @@ Then we started to get to know each other and i sent you the flowers during your
   function openBox(id) {
     const m = BOXES[id];
     document.getElementById("modal").innerHTML = `
-      <div class="modal-hero" style="--poster:${poster(m)}">
+      <div class="modal-hero" style="${bg(m)}">
         ${m.video ? `<video class="bg" id="modal-video" src="${m.video}" autoplay muted loop playsinline></video>` : ""}
         <button class="close" onclick="closeModal()">✕</button>
         ${cover(m)}
