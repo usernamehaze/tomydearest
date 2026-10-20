@@ -176,6 +176,7 @@
   }
   .modal-body { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; padding: 8px 32px 36px; }
   .modal-body p { line-height: 1.6; color: #ddd; }
+  .modal-body p + p { margin-top: 14px; }
   .modal-body .side { font-size: 14px; color: #777; line-height: 1.8; }
   .modal-body .side b { color: #ddd; font-weight: 400; }
   .moments { grid-column: 1 / -1; }
@@ -511,11 +512,16 @@
       label: "S1:E5",
       progress: 35,
       emoji: "💖",
-      story: "Five months in, and this is only the beginning of us.",
+      // A blank line between paragraphs starts a new paragraph
+      story: `Remember when you sent me a screenshot of people who bash you na "ipit" daw yung boses mo. Hahaha. Na feeling close ka sakin na para bang close na tayo niyan. Hahaha feeling close yan siya pero gusto lang niyan ako makausap. lol But tbh, natatawa ako niyan kasi why would you send me messagw if we're not even close hahaha. Your personality really is interesting that time and I want to know you more.
+
+Then we started to get to know each other and i sent you the flowers during your "Filipino Night" and you wanted me to be there while you host the event. I want you to feel that you're worth it since the first time we talked lagi mo sinasabi na "hindi ka worth it" and I want you to feel special that time. It's actually a rush kasi, I'm just getting started palang. I also remember that you only get something whenever you achieved something, and there you deserve it baby.`,
       colors: ["#ff4d6d", "#590d22"],
       photo: "media/month5/flowers.jpg",
       video: "",
       gallery: [
+        "media/month5/cliffhanger.jpg",
+        "media/month5/iritang-irita.png",
         "media/month5/flowers-surprise.mp4",
         "media/month5/more-than-friends.jpg",
         "media/month5/dont-wanna-lose-u.jpg",
@@ -706,7 +712,7 @@
           <div class="meta" style="display:flex;gap:12px;margin-bottom:12px;color:#ddd">
             <span class="match">100% Match</span>${m.date ? `<span>${m.date}</span>` : ""}${m.label ? `<span class="pill">${m.label}</span>` : ""}
           </div>
-          <p>${m.story || ""}</p>
+          ${(m.story || "").split(/\n\s*\n/).map(para => `<p>${para.trim()}</p>`).join("")}
         </div>
         <div class="side">
           ${(m.side || [["Starring", "You & Me"]]).map(([k, v]) => `<div>${k}: <b>${v}</b></div>`).join("")}
