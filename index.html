@@ -340,9 +340,16 @@
   .gate.hide { opacity: 0; pointer-events: none; }
   .gate .logo { position: absolute; top: 18px; left: 4%; }
   .gate h1 { font-size: clamp(30px, 5vw, 52px); font-weight: 500; margin-bottom: 28px; }
+  .profiles { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(14px, 2.4vw, 32px); max-width: 860px; align-items: flex-start; }
+  @media (max-width: 640px) {
+    .profiles { display: grid; grid-template-columns: repeat(2, auto); gap: 18px 28px; }
+    .profile img { width: 128px; }
+  }
+  .wrong { min-height: 30px; margin-top: 22px; color: #e87c03; font-size: 18px; font-weight: 600; opacity: 0; transition: opacity .2s; }
+  .wrong.show { opacity: 1; animation: shake .4s; }
   .profile { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; }
   .profile img {
-    display: block; width: clamp(120px, 14vw, 170px); aspect-ratio: 1; object-fit: cover;
+    display: block; width: clamp(110px, 14vw, 170px); aspect-ratio: 1; object-fit: cover;
     border-radius: 6px; border: 3px solid transparent; transition: border-color .2s, transform .2s;
   }
   .profile:hover img, .profile:focus-visible img { border-color: #fff; transform: scale(1.04); }
@@ -395,11 +402,26 @@
   <div class="logo">Our Story</div>
   <div class="pick-view">
     <h1>Who's watching?</h1>
-    <button class="profile" onclick="askPin()">
-      <img src="media/profile-riri.jpg" alt="">
-      <span class="pname">my riri</span>
-      <span class="lock">🔒</span>
-    </button>
+    <div class="profiles">
+      <button class="profile" onclick="askPin()">
+        <img src="media/profile-riri.jpg" alt="">
+        <span class="pname">my riri</span>
+        <span class="lock">🔒</span>
+      </button>
+      <button class="profile" onclick="wrongProfile()">
+        <img src="media/profile-my-baby.jpg" alt="">
+        <span class="pname">my baby</span>
+      </button>
+      <button class="profile" onclick="wrongProfile()">
+        <img src="media/profile-my-nurse.jpg" alt="">
+        <span class="pname">my nurse</span>
+      </button>
+      <button class="profile" onclick="wrongProfile()">
+        <img src="media/profile-my-wife.jpg" alt="">
+        <span class="pname">my wife</span>
+      </button>
+    </div>
+    <div class="wrong" id="wrong">Wrong profile!</div>
   </div>
   <div class="pin-view">
     <div class="small">Profile Lock is currently on.</div>
@@ -1057,6 +1079,13 @@ Then we started to get to know each other and i sent you the flowers during your
   try { unlocked = sessionStorage.getItem("unlocked") === "1"; } catch (e) {}
   if (unlocked) gate.remove(); else document.body.style.overflow = "hidden";
 
+  let wrongTimer;
+  function wrongProfile() {
+    const w = document.getElementById("wrong");
+    w.classList.remove("show"); void w.offsetWidth; w.classList.add("show");
+    clearTimeout(wrongTimer);
+    wrongTimer = setTimeout(() => w.classList.remove("show"), 2000);
+  }
   function askPin() {
     gate.classList.add("asking");
     pinInput.value = ""; showPin();
