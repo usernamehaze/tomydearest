@@ -357,6 +357,8 @@
   //  Pictures & videos: put the files in the media/ folder, then
   //  for each month fill in (all optional):
   //    photo:   cover picture for the boxes, e.g. "media/month1/cover.jpg"
+  //    continuePhoto: picture for this month's box in "Continue Watching"
+  //             only (falls back to photo)
   //    video:   clip that plays when you hover the box (and in the
   //             big banner for the latest month), e.g. "media/month1/clip.mp4"
   //    gallery: more pictures and videos shown when you open the month,
@@ -443,7 +445,8 @@
         ["🤗", "Next time I see you", "The hug I've been saving up."]
       ],
       colors: ["#ff4d6d", "#590d22"],
-      photo: "media/month5/flowers.jpg",
+      photo: "",
+      continuePhoto: "media/month5/flowers.jpg",
       video: "",
       gallery: [
         "media/month5/flowers-surprise.mp4",
@@ -533,6 +536,7 @@
   // Continue watching: progress bars fill as the months go by
   document.getElementById("row-continue").innerHTML = MONTHS.slice().reverse().map((m, r) => {
     const i = MONTHS.length - 1 - r;
+    if (m.continuePhoto) m = { ...m, photo: m.continuePhoto };
     return `
     <div class="card" style="--poster:${poster(m)}" onclick="openMonth(${i})">
       ${cover(m)}${preview(m)}
